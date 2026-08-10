@@ -1,27 +1,26 @@
 package com.example.payment.Repository.user;
 
+import com.example.payment.Repository.BaseEntity;
 import lombok.Getter;
 
 @Getter
-public class User {
+public class User extends BaseEntity {
     private static int USER_CURRENT_ID = 0;
     private static int idGenerator() {
         return ++USER_CURRENT_ID;
     }
 
-    private Integer id;
     private String name;
-    private boolean deleted = false;
 
 
-    private User(Integer id, String name) {
-        this.id = id;
+    private User(Integer id, String name, Integer userId) {
+        super(id, userId);
         this.name = name;
         //deleted
     }
 
-    private static User create(String name) {
+    private static User create(String name, Integer userId) {
         int generatedId = idGenerator();
-        return new User(generatedId, name);
+        return new User(generatedId, name, userId);
     }
 }
