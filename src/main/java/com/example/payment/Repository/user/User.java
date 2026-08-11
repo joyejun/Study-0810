@@ -13,6 +13,8 @@ public class User extends BaseEntity {
     }
 
     private String name;
+    private UserGrade grade = UserGrade.BRONZE;
+    private int point = 0;
 
 
     private User(Integer id, String name, Integer userId) {
@@ -25,4 +27,10 @@ public class User extends BaseEntity {
         int generatedId = idGenerator();
         return new User(generatedId, name, userId);
     }
+
+    public void earn(int paidPrice) {
+        this.point += (int) (paidPrice * this.grade.getEarningRate());
+    }
+
+
 }

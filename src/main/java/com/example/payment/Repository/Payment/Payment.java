@@ -77,4 +77,21 @@ public class Payment extends BaseEntity {
         this.purchasedAt = LocalDateTime.now();
         super.updated();
     }
+
+    public void deliverling() {
+        if (this.status.compareTo(PaymentStatus.IN_DELIVERY) > 0) {
+            throw new RuntimeException("배송중으로 상태를 바굴수 없는 결재건입니다." + this.toString());
+        }
+        this.status = PaymentStatus.IN_DELIVERY;
+        super.updated();
+    }
+
+    public void delivered() {
+        if (this.status.compareTo(PaymentStatus.DELIVERY_COMPLETE) > 0) {
+            throw new RuntimeException("배송완료로 상태를 바굴수 없는 결재건입니다." + this.toString());
+        }
+        this.status = PaymentStatus.DELIVERY_COMPLETE;
+        this.deliveredAt = LocalDateTime.now();
+        super.updated();
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.payment.Common.context.UserContext;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @ToString
 @Getter
@@ -38,6 +39,7 @@ public abstract class BaseEntity {
     }
 
     protected void updated() {
+        Integer currentUserId  = Optional.ofNullable(UserContext.getuserId()).orElse(this.createdBy);
         this.updatedAT = LocalDateTime.now();
         this.updatedBy = currentUserId;
     }
