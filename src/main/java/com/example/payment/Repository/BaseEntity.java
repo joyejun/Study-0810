@@ -10,15 +10,13 @@ import java.time.LocalDateTime;
 @Getter
 public abstract class BaseEntity {
 
-    private Integer id;
-    private boolean deleted = false;
+    protected Integer id;
+    protected boolean deleted = false;
 
-    private LocalDateTime createdAT;
-    private       Integer createdBy;
-    @Setter
-    private LocalDateTime updatedAT;
-    @Setter
-    private       Integer updatedBy;
+    protected LocalDateTime createdAT;
+    protected       Integer createdBy;
+    protected LocalDateTime updatedAT;
+    protected       Integer updatedBy;
 
     protected BaseEntity(Integer id, Integer userId) {
         this.id = id;
