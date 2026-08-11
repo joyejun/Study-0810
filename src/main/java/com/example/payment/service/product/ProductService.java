@@ -35,6 +35,13 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
+    public Product create(Product entity) {
+        Optional<Product> wrappedcreated = productRepository.create(entity);
+                Product         product = wrappedcreated
+                        .orElseThrow(() -> new RuntimeException("생성할 제품이 없습니다."));
+        return product;
+    }
+
     public List<Product> update(List<Product> entites) {
         return entites.stream()
                 .map(this::update)
@@ -46,5 +53,22 @@ public class ProductService {
                  Product         product = wrappedProduct
                          .orElseThrow(() -> new RuntimeException("업데이트가 정상적으로 진행되지 않았습니다."));
         return product;
+    }
+
+    public void active(Integer id) {
+        Product exist = this.getProduct(id);
+        exist.active();
+        productRepository.update(exist);
+    }
+
+    public void softDelete(Integer id) {
+        Product exist = this.getProduct(id);
+        exist.delete();
+        productRepository.update(exist);
+    }
+
+    public void hardDelete(Integer id) {
+        Product exist = this.getProduct(id);
+        productRepository.delete(id);
     }
 }

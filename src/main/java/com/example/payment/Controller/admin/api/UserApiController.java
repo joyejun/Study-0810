@@ -3,11 +3,10 @@ package com.example.payment.Controller.admin.api;
 
 import com.example.payment.Application.User.UserAdminApplcation;
 import com.example.payment.Common.context.UserContext;
-import com.example.payment.Controller.dto.UserAdminCreateRequestDto;
-import com.example.payment.Controller.dto.UserAdminResponseDto;
-import com.example.payment.Controller.dto.UserAdminUpdateRequestDto;
+import com.example.payment.Controller.dto.User.UserAdminCreateRequestDto;
+import com.example.payment.Controller.dto.User.UserAdminResponseDto;
+import com.example.payment.Controller.dto.User.UserAdminUpdateRequestDto;
 import com.example.payment.Repository.user.User;
-import com.example.payment.Repository.user.UserRepository;
 import com.example.payment.internal.api.dto.RequestingUserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

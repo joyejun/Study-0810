@@ -1,7 +1,7 @@
 package com.example.payment.Application.User;
 
-import com.example.payment.Controller.dto.UserAdminResponseDto;
-import com.example.payment.Controller.dto.UserAdminUpdateRequestDto;
+import com.example.payment.Controller.dto.User.UserAdminResponseDto;
+import com.example.payment.Controller.dto.User.UserAdminUpdateRequestDto;
 import com.example.payment.Repository.user.User;
 import com.example.payment.service.User.UserService;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.payment.Controller.dto;
+package com.example.payment.Controller.dto.User;
 
 import com.example.payment.Repository.user.UserGrade;
 import com.example.payment.internal.api.dto.RequestingUserDto;

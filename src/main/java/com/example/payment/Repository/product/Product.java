@@ -28,9 +28,16 @@ public class Product extends BaseEntity {
         //deleted
     }
 
-    private static Product create(String name, int price, int stock, Integer userId) {
+    public static Product create(String name, int price, int stock, Integer userId) {
         int generatedId = idGenerator();
         return new Product(generatedId, name, price, stock, userId);
+    }
+
+    public void update(String name, int price, int stock) {
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+        super.updated();
     }
 
     public void buyable() {
