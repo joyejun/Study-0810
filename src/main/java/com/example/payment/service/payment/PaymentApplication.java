@@ -20,28 +20,24 @@ public class PaymentApplication {
     private final ProductService productService;
 
     public PaymentResponseDto payment(List<Integer> productIds , Integer requestedUserId) {
-        PaymentResponseDto.PaymentResponseDtoBuilder responseDtoBuilder = PaymentResponseDto.builder();
-        //1. 구매하려는 상품이 있는지 + 상품의 재고가 충분한지 검증
-        List<Product> products = new ArrayList<>();
-
-        for (Integer producrtId : productIds) {
-            Product product = productService.getProduct(producrtId);
-            products.add(product);
-            //실제 구매완료
-        }
+       List<Product> updatedProducts = productIds.stream()
+               .map((productId) -> {
+                   Product product = productService.getProduct(productId);
+                   product.buyable();
+                   product.decrease();
+                   return product;
+               })
+               .toList();
+       productService.update(updatedProducts);
         //실제 재품구매
-        Payment creating = Payment.create(products, requestedUserId);
+        Payment creating = Payment.create(updatedProducts, requestedUserId);
         creating.complete(requestedUserId);
-        Payment created = paymentService.create(creating);
-        responseDtoBuilder.payment(created);
-        //구매가 완료된 제품에 대해서 1개씩 차감
-        for (Product product : products) {
-            product.decrease();
-            productService.update(product);
-        }
-        responseDtoBuilder.products(products);
-        return responseDtoBuilder.build();
 
+        Payment createdPayment = paymentService.create(creating);
+        return PaymentResponseDto.builder()
+                .payment(createdPayment)
+                .products(updatedProducts)
+                .build();
     }
 
     public PaymentResponseDto cancel( Integer id,  Integer requestUserId) {

@@ -33,6 +33,12 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
+    public List<Product> update(List<Product> entites) {
+        return entites.stream()
+                .map(this::update)
+                .toList();
+    }
+
     public Product update(Product entity) {
         Optional<Product> wrappedProduct = productRepository.update(entity);
                  Product         product = wrappedProduct
