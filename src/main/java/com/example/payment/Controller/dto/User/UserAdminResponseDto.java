@@ -1,9 +1,12 @@
 package com.example.payment.Controller.dto.User;
 
+
 import com.example.payment.Repository.user.User;
 import com.example.payment.Repository.user.UserGrade;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public class UserAdminResponseDto {
 

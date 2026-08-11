@@ -13,7 +13,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-public class PaymentApplication implements IPaymentApplication{
+public class PPaymentApplication implements IPaymentApplication{
     private final PaymentService paymentService;
     private final ProductService productService;
 
