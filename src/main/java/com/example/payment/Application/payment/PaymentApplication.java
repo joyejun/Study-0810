@@ -18,7 +18,7 @@ public class PaymentApplication implements IPaymentApplication{
     private final ProductService productService;
 
     @Override
-    public PaymentResponseDto payment(List<Integer> productIds , Integer requestedUserId) {
+    public PaymentResponseDto payment(List<Integer> productIds) {
        List<Product> updatedProducts = productIds.stream()
                .map((productId) -> {
                    Product product = productService.getProduct(productId);
@@ -29,8 +29,8 @@ public class PaymentApplication implements IPaymentApplication{
                .toList();
        productService.update(updatedProducts);
         //실제 재품구매
-        Payment creating = Payment.create(updatedProducts, requestedUserId);
-        creating.complete(requestedUserId);
+        Payment creating = Payment.create(updatedProducts);
+        creating.complete();
 
         Payment createdPayment = paymentService.create(creating);
         return PaymentResponseDto.builder()
@@ -40,17 +40,17 @@ public class PaymentApplication implements IPaymentApplication{
     }
 
     @Override
-    public PaymentResponseDto cancel( Integer id,  Integer requestUserId) {
+    public PaymentResponseDto cancel( Integer id ) {
         PaymentResponseDto.PaymentResponseDtoBuilder responseBuilder = PaymentResponseDto.builder();
         //1.취소하려는 결제건이 존재하는지 확인
-        Payment payment = paymentService.getPayment(id);
+        Payment cancelPayment = paymentService.getPayment(id);
         // 취소완료
-        payment.cancel(requestUserId);
-        paymentService.update(payment);
-        responseBuilder.payment(payment);
+        cancelPayment.cancel();
+        paymentService.update(cancelPayment);
+        responseBuilder.payment(cancelPayment);
         //3. 취소한 결제건에 들어있던 모든 상품들의 재고를 1증가시키며 롤백
         List<Product> products = new ArrayList<>();
-        List<Integer> productIds = payment.getProductIds();
+        List<Integer> productIds = cancelPayment.getProductIds();
         for (Integer productId : productIds) {
             Product product = productService.getProduct(productId);
             product.increase();

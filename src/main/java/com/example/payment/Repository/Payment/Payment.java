@@ -1,7 +1,9 @@
 package com.example.payment.Repository.Payment;
 
+import com.example.payment.Common.context.UserContext;
 import com.example.payment.Repository.BaseEntity;
 import com.example.payment.Repository.product.Product;
+import com.example.payment.Repository.user.User;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -34,40 +36,45 @@ public class Payment extends BaseEntity {
         //deleted
     }
 
-    public static Payment create(List<Product> products, /**  누가 구매하였는지*/Integer userId) {
+    public static Payment create(List<Product> products) {
         int generatedId = idGenerator();
+        Integer currentUserId = UserContext.getuserId();
         List<Integer> productIds = products.stream()
                 .map(Product::getId)
                 .toList();
         int paidPrice = products.stream()
                 .map(Product::getPrice)
                 .reduce(0,Integer::sum);
-        return new Payment(generatedId, productIds, paidPrice, userId);
+        return new Payment(generatedId, productIds, paidPrice, currentUserId);
     }
 
-    public void complete(Integer requestuserId) {
-        if (!requestuserId.equals(super.createdBy)) {
+    public void complete() {
+        //threadLocal 로부터 현재 요청한 유저 ID를 꺼내와서 권한 적용
+        Integer currentUserId = UserContext.getuserId();
+        if (!currentUserId.equals(super.createdBy)) {
             throw new RuntimeException("취소하려는 유저와 취소하려는 결제를 수행한 유저가 다름니다.requestuserId" +
-                    requestuserId+"!= paymentUserId"+super.createdBy);
+                    currentUserId+"!= paymentUserId"+super.createdBy);
         }
         if (this.status.compareTo(PaymentStatus.PAYMENT_COMPLETE) > 0) {
             throw new RuntimeException("결제완료로 상태를 바꿀수 없는 결제건입니다. payment"+ this.toString());
         }
         this.status = PaymentStatus.PAYMENT_COMPLETE;
         this.purchasedAt = LocalDateTime.now();
-        super.updated(requestuserId);
+        super.updated();
     }
 
-    public void cancel(Integer requestuserId) {
-        if (!requestuserId.equals(super.createdBy)) {
+    public void cancel() {
+        //threadLocal 로부터 현재 요청한 유저 ID를 꺼내와서 권한 적용
+        Integer currentUserId = UserContext.getuserId();
+        if (!currentUserId.equals(super.createdBy)) {
             throw new RuntimeException("취소하려는 유저와 취소하려는 결제를 수행한 유저가 다름니다.requestuserId" +
-                    requestuserId+"!= paymentUserId"+super.createdBy);
+                    currentUserId+"!= paymentUserId"+super.createdBy);
         }
         if (this.status.isCancellable()) {
             throw new RuntimeException("취소하시려는 결제는 취소할 수 없습니다- id " + this.id + "status"+ this.status);
         }
         this.status = PaymentStatus.PAYMENT_COMPLETE;
         this.purchasedAt = LocalDateTime.now();
-        super.updated(requestuserId);
+        super.updated();
     }
 }
