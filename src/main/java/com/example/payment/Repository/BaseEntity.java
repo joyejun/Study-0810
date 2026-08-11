@@ -1,9 +1,12 @@
 package com.example.payment.Repository;
 
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
+@ToString
 @Getter
 public abstract class BaseEntity {
 
@@ -12,7 +15,9 @@ public abstract class BaseEntity {
 
     private LocalDateTime createdAT;
     private       Integer createdBy;
+    @Setter
     private LocalDateTime updatedAT;
+    @Setter
     private       Integer updatedBy;
 
     protected BaseEntity(Integer id, Integer userId) {

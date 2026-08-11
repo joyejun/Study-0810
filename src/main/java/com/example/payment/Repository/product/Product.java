@@ -3,8 +3,10 @@ package com.example.payment.Repository.product;
 import com.example.payment.Repository.BaseEntity;
 import com.example.payment.Repository.user.User;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@
+@ToString(callSuper = true)
 @Getter
 public class Product extends BaseEntity {
     private static int PRODUCT_CURRENT_ID = 0;
@@ -14,6 +16,7 @@ public class Product extends BaseEntity {
 
     private String name;
     private int price;
+    @Setter
     private int stock;
     private boolean deleted = false;
 

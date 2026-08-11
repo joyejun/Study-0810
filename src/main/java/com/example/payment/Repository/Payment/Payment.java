@@ -2,13 +2,14 @@ package com.example.payment.Repository.Payment;
 
 import com.example.payment.Repository.BaseEntity;
 import com.example.payment.Repository.product.Product;
-import com.example.payment.Repository.user.User;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-
+@ToString(callSuper = true)
 @Getter
 public class Payment extends BaseEntity {
     private static int PAYMENT_CURRENT_ID = 0;
@@ -17,10 +18,14 @@ public class Payment extends BaseEntity {
     }
 
     private List<Integer> productIds;
+    @Setter
     private PaymentStatus status =PaymentStatus.IN_PAYMENT;
     private int paidPrice;
+    @Setter
     private LocalDateTime purchasedAt;
+    @Setter
     private LocalDateTime deliveredAt;
+    @Setter
     private LocalDateTime cancelledAt;
 
 
@@ -31,7 +36,7 @@ public class Payment extends BaseEntity {
         //deleted
     }
 
-    private static Payment create(List<Product> products, /**  누가 구매하였는지*/Integer userId) {
+    public static Payment create(List<Product> products, /**  누가 구매하였는지*/Integer userId) {
         int generatedId = idGenerator();
         List<Integer> productIds = products.stream()
                 .map(Product::getId)
@@ -40,5 +45,10 @@ public class Payment extends BaseEntity {
                 .map(Product::getPrice)
                 .reduce(0,Integer::sum);
         return new Payment(generatedId, productIds, paidPrice, userId);
+    }
+
+    public void updated(Integer userId) {
+        setUpdatedAT(LocalDateTime.now());
+        setUpdatedBy(userId);
     }
 }
