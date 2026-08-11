@@ -17,17 +17,26 @@ import java.util.Optional;
 public class ProductService {
     private final ProductRepository productRepository;
 
-    public List<ProductResponseDto> retrieve() {
-        List<Product> products = productRepository.findAll();
-        return products.stream()
-                .map(ProductResponseDto::from)
-                .toList();
+
+    public List<Product> getProdcts() {
+        return productRepository.findAll();
     }
 
-    public ProductResponseDto retrieve(Integer id) {
+    public Product getProduct(Integer id) {
         Optional<Product> wrapproduct = productRepository.findById(id);
         Product      product = wrapproduct
-                .orElseThrow(() -> new RuntimeException("찾으시는 아이디는 존재하지 않습니다"));
-        return ProductResponseDto.from(product);
+                .orElseThrow(() -> new RuntimeException("찾으시는 유저가 존재하지 않습니다."));
+        return product;
+    }
+
+    public Optional<Product> findProduct(Integer id) {
+        return productRepository.findById(id);
+    }
+
+    public Product update(Product entity) {
+        Optional<Product> wrappedProduct = productRepository.update(entity);
+                 Product         product = wrappedProduct
+                         .orElseThrow(() -> new RuntimeException("업데이트가 정상적으로 진행되지 않았습니다."));
+        return product;
     }
 }

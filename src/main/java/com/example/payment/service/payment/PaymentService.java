@@ -14,74 +14,45 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * PaymentService
+ *  - Service 명칭 자체가 기본적으로 도메인 서비스를 의미 Domain Service
+ *      = Domain Service <- Domain Repository
+ *  - Payment 도메인(엔티티 객체)을 파라미터로 받거나 반환값으로 반환하는
+ *      = PaymentService 와 외부 Application 의 관계는
+ *          - 외부 Application 에게 Payment 반환해주거나
+ *          - 외부 Application 로부터 Payment 받아서 그것에 대한 처리를 해주거나
+ *              * 처리 : CRUD 에 국한된다 / 주의 ! 도메인 내부 상태를 바꾸는 메서드는 Application 에서 호출할것 !
+ *  - Domain Service 서비스의 강제사항은 단 하나의 Domain Repository 만 필드로 가져야한다는것
+ */
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
-    private final ProductRepository productRepository;
     private final PaymentRepository paymentRepository;
 
-    public PaymentResponseDto payment(List<Integer> productIds , Integer requestedUserId) {
-        PaymentResponseDto.PaymentResponseDtoBuilder responseDtoBuilder = PaymentResponseDto.builder();
-        //1. 구매하려는 상품이 있는지 + 상품의 재고가 충분한지 검증
-        List<Product> products = new ArrayList<>();
-
-        for (Integer producrtId : productIds) {
-            Optional<Product> wrapProduct = productRepository.findById(producrtId);
-            Product       product = wrapProduct
-                    .orElseThrow(() -> new RuntimeException("찾으시는 상품이 존재하지 않습니다."+ producrtId));
-
-            if (product.getStock() < 1) {
-                throw new RuntimeException("구매하시려는 상품의 재고가 존재하지 않습니다. -product"+ product);
-            }
-            products.add(product);
-            //실제 구매완료
-        }
-        //실제 재품구매
-        Payment creating = Payment.create(products, requestedUserId);
-        creating.setStatus(PaymentStatus.PAYMENT_COMPLETE);
-        creating.setPurchasedAt(LocalDateTime.now());
-        creating.updated(requestedUserId);
-        Optional<Payment> wrappedCreated = paymentRepository.create(creating);
-        Payment         created = wrappedCreated
-                .orElseThrow(() -> new RuntimeException("결제가 정상적으로 생성되지 않았습니다."));
-        responseDtoBuilder.payment(created);
-        //구매가 완료된 제품에 대해서 1개씩 차감
-        for (Product product : products) {
-            product.setStock(product.getStock() - 1);
-            productRepository.update(product);
-        }
-        responseDtoBuilder.products(products);
-        return responseDtoBuilder.build();
-
-    }
-
-    public PaymentResponseDto cancel( Integer id,  Integer RequestedUserId) {
-        PaymentResponseDto.PaymentResponseDtoBuilder responseBuilder = PaymentResponseDto.builder();
-        //1.취소하려는 결제건이 존재하는지 확인
+    public Payment getPayment(Integer id) {
         Optional<Payment> wrappedPayment = paymentRepository.findById(id);
-        Payment         payment = wrappedPayment
-                .orElseThrow(() -> new RuntimeException("추소하려는 결재건이 존재하지 않습니다."+ id));
-        // 취소완료
-        PaymentStatus currentStatus = payment.getStatus();
-        if (!currentStatus.isCancellable()) {
-            throw new RuntimeException("취소하려는 결제를 취소할수 없는 상태입니다.id"+payment.getId()+"status"+currentStatus);
-        }
-        payment.setStatus(PaymentStatus.CANCEL_COMPLETE);
-        payment.setCancelledAt(LocalDateTime.now());
-        payment.updated(RequestedUserId);
-        responseBuilder.payment(payment);
-        //3. 취소한 결제건에 들어있던 모든 상품들의 재고를 1증가시키며 롤백
-        List<Product> products = new ArrayList<>();
-        List<Integer> productIds = payment.getProductIds();
-        for (Integer productId : productIds) {
-            Optional<Product> wrappedProduct = productRepository.findById(productId);
-            Product                  product = wrappedProduct
-                    .orElseThrow(() -> new RuntimeException("결제한 상품이 존재하지 않습니다."+ productId));
-            product.setStock(product.getStock() + 1);
-            productRepository.update(product);
-            products.add(product);
-        }
-        responseBuilder.products(products);
-        return responseBuilder.build();
+                 Payment         payment = wrappedPayment
+                        .orElseThrow(() -> new RuntimeException("찾으시는 결제가 존재하지 않습니다."));
+
+        return payment;
     }
+
+    public Payment create(Payment entity) {
+        Optional<Payment> wrappedCreated = paymentRepository.create(entity);
+                    Payment       created = wrappedCreated
+                            .orElseThrow(()-> new RuntimeException("결재가 정상적으로 생성되지 않습니다."));
+        return created;
+    }
+
+    public Payment update(Payment entity) {
+        Optional<Payment> wrappedUpdated = paymentRepository.update(entity);
+        Payment                 updated = wrappedUpdated
+                .orElseThrow(() -> new RuntimeException("결재가 정상적으로 업데이트 되지 않습니다."));
+        return updated;
+    }
+
+
+
+
 }
