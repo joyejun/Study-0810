@@ -1,24 +1,23 @@
-package com.example.payment.service.payment;
+package com.example.payment.Application.payment;
 
 import com.example.payment.Repository.Payment.Payment;
-import com.example.payment.Repository.Payment.PaymentStatus;
 import com.example.payment.Repository.product.Product;
 import com.example.payment.internal.api.dto.PaymentResponseDto;
+import com.example.payment.service.payment.PaymentService;
 import com.example.payment.service.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class PaymentApplication {
+public class PaymentApplication implements IPaymentApplication{
     private final PaymentService paymentService;
     private final ProductService productService;
 
+    @Override
     public PaymentResponseDto payment(List<Integer> productIds , Integer requestedUserId) {
        List<Product> updatedProducts = productIds.stream()
                .map((productId) -> {
@@ -40,6 +39,7 @@ public class PaymentApplication {
                 .build();
     }
 
+    @Override
     public PaymentResponseDto cancel( Integer id,  Integer requestUserId) {
         PaymentResponseDto.PaymentResponseDtoBuilder responseBuilder = PaymentResponseDto.builder();
         //1.취소하려는 결제건이 존재하는지 확인
