@@ -1,5 +1,7 @@
 package com.example.payment.service.product;
 
+import com.example.payment.Application.product.IProductApplication;
+import com.example.payment.Repository.IRepository;
 import com.example.payment.Repository.product.Product;
 import com.example.payment.Repository.product.ProductRepository;
 import com.example.payment.internal.api.dto.ProductResponseDto;
@@ -15,7 +17,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-    private final ProductRepository productRepository;
+    private final IRepository<Integer, Product> productRepository;
 
 
     public List<Product> getProdcts() {

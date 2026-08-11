@@ -1,5 +1,7 @@
 package com.example.payment.service.payment;
 
+import com.example.payment.Application.payment.IPaymentApplication;
+import com.example.payment.Repository.IRepository;
 import com.example.payment.Repository.Payment.Payment;
 import com.example.payment.Repository.Payment.PaymentRepository;
 import com.example.payment.Repository.Payment.PaymentStatus;
@@ -28,7 +30,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
-    private final PaymentRepository paymentRepository;
+    private final IRepository<Integer, Payment> paymentRepository;
 
     public Payment getPayment(Integer id) {
         Optional<Payment> wrappedPayment = paymentRepository.findById(id);
