@@ -9,6 +9,7 @@ import com.example.payment.internal.api.dto.PaymentCreateRequestDto;
 import com.example.payment.internal.api.dto.PaymentResponseDto;
 import com.example.payment.internal.api.dto.ProductResponseDto;
 import com.example.payment.internal.api.dto.RequestingUserDto;
+import com.example.payment.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,76 +21,6 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 public class PaymentController {
-    private final ProductRepository productRepository;
-    private final PaymentRepository paymentRepository;
-
-    @RequestMapping(method = RequestMethod.POST, value = "/internal/api/payments")
-    public PaymentResponseDto payment(@RequestBody PaymentCreateRequestDto requestDto) {
-        Integer requestUserId = requestDto.getRequestUserId();
-        PaymentResponseDto.PaymentResponseDtoBuilder responseDtoBuilder = PaymentResponseDto.builder();
-        //1. 구매하려는 상품이 있는지 + 상품의 재고가 충분한지 검증
-        List<Product> products = new ArrayList<>();
-        List<Integer> productIds = requestDto.getProductIds();
-        for (Integer producrtId : productIds) {
-            Optional<Product> wrapProduct = productRepository.findById(producrtId);
-                    Product       product = wrapProduct
-                            .orElseThrow(() -> new RuntimeException("찾으시는 상품이 존재하지 않습니다."+ producrtId));
-
-                    if (product.getStock() < 1) {
-                        throw new RuntimeException("구매하시려는 상품의 재고가 존재하지 않습니다. -product"+ product);
-                    }
-                    products.add(product);
-                    //실제 구매완료
-        }
-        //실제 재품구매
-        Payment creating = Payment.create(products, requestUserId);
-        creating.setStatus(PaymentStatus.PAYMENT_COMPLETE);
-        creating.setPurchasedAt(LocalDateTime.now());
-        creating.updated(requestUserId);
-        Optional<Payment> wrappedCreated = paymentRepository.create(creating);
-                 Payment         created = wrappedCreated
-                        .orElseThrow(() -> new RuntimeException("결제가 정상적으로 생성되지 않았습니다."));
-        responseDtoBuilder.payment(created);
-        //구매가 완료된 제품에 대해서 1개씩 차감
-        for (Product product : products) {
-            product.setStock(product.getStock() - 1);
-            productRepository.update(product);
-        }
-        responseDtoBuilder.products(products);
-        return responseDtoBuilder.build();
-
-    }
-
-    @RequestMapping(method = RequestMethod.PATCH, value = "/internal/api/payments/{id}/cancel")
-    public PaymentResponseDto cancel(@PathVariable Integer id, @RequestBody RequestingUserDto request) {
-        Integer requestUserId = request.getRequestUserId();
-        PaymentResponseDto.PaymentResponseDtoBuilder responseBuilder = PaymentResponseDto.builder();
-        //1.취소하려는 결제건이 존재하는지 확인
-        Optional<Payment> wrappedPayment = paymentRepository.findById(id);
-                 Payment         payment = wrappedPayment
-                         .orElseThrow(() -> new RuntimeException("추소하려는 결재건이 존재하지 않습니다."+ id));
-                 // 취소완료
-        PaymentStatus paymentStatus = payment.getStatus();
-        if (!paymentStatus.isCancellable()) {
-            throw new RuntimeException("취소하려는 결제를 취소할수 없는 상태입니다.id"+payment.getId()+"status"+paymentStatus);
-        }
-        payment.setStatus(PaymentStatus.CANCEL_COMPLETE);
-        payment.setCancelledAt(LocalDateTime.now());
-        payment.updated(requestUserId);
-        responseBuilder.payment(payment);
-        //3. 취소한 결제건에 들어있던 모든 상품들의 재고를 1증가시키며 롤백
-        List<Product> products = new ArrayList<>();
-        List<Integer> productIds = payment.getProductIds();
-        for (Integer productId : productIds) {
-            Optional<Product> wrappedProduct = productRepository.findById(productId);
-            Product                  product = wrappedProduct
-                    .orElseThrow(() -> new RuntimeException("결제한 상품이 존재하지 않습니다."+ productId));
-            product.setStock(product.getStock() + 1);
-            productRepository.update(product);
-            products.add(product);
-            }
-        responseBuilder.products(products);
-        return responseBuilder.build();
-        }
-    }
+  private final PaymentService paymentService;
+}
 
