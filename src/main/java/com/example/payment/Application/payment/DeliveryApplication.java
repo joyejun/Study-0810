@@ -2,7 +2,7 @@ package com.example.payment.Application.payment;
 
 import com.example.payment.Repository.Payment.Payment;
 import com.example.payment.Repository.user.User;
-import com.example.payment.admin.Service.User.UserService;
+import com.example.payment.service.User.UserService;
 import com.example.payment.external.api.Dto.DeliveryResponseDto;
 import com.example.payment.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;

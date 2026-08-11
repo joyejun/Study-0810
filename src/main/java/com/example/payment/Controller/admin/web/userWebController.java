@@ -1,12 +1,11 @@
-package com.example.payment.admin.api;
-
+package com.example.payment.Controller.admin.web;
 
 import com.example.payment.Repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
-public class UserApiController {
+public class userWebController {
     private final UserRepository userRepository;
 }

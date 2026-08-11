@@ -6,5 +6,5 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class RequestingUserDto {
-    private Integer requestUserId;
+    protected Integer requestUserId;
 }

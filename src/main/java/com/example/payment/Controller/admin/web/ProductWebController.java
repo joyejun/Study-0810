@@ -1,4 +1,4 @@
-package com.example.payment.admin.web;
+package com.example.payment.Controller.admin.web;
 
 import com.example.payment.Repository.product.ProductRepository;
 import lombok.RequiredArgsConstructor;

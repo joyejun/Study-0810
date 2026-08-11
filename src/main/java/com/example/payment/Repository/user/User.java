@@ -22,8 +22,14 @@ public class User extends BaseEntity {
         this.name = name;
         //deleted
     }
+    public void update(String name, UserGrade grade, int point) {
+        this.name = name;
+        this.grade = grade;
+        this.point = point;
+        super.updated();
+    }
 
-    private static User create(String name, Integer userId) {
+    public static User create(String name, Integer userId) {
         int generatedId = idGenerator();
         return new User(generatedId, name, userId);
     }
