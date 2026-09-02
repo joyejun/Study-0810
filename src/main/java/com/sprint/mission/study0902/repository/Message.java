@@ -20,7 +20,7 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)  //id 생성 책임을 database 에 위임한다.
     private Integer id;
     private String message;
-    private Integer userId;
-    private LocalDateTime createAt;
+    private Integer user_id;
+    private LocalDateTime created_at;
 
 }

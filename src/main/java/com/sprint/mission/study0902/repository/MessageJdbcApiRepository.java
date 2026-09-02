@@ -26,7 +26,7 @@ public class MessageJdbcApiRepository {
 
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("SELECT * FROM \"message\" WHERE userId = ?");
+            statement = connection.prepareStatement("SELECT * FROM \"Message\" WHERE user_id = ?");
             statement.setInt(1,userId);
             List<Message> results = new ArrayList<>();
             while (resultSet.next()) {
@@ -34,8 +34,8 @@ public class MessageJdbcApiRepository {
                         new Message(
                                 resultSet.getInt("id"),
                                 resultSet.getString("message"),
-                                resultSet.getInt("userId"),
-                                resultSet.getTimestamp("createAt")
+                                resultSet.getInt("user_id"),
+                                resultSet.getTimestamp("created_at")
                                         .toInstant()
                                         .atZone(ZoneId.systemDefault())
                                         .toLocalDateTime()
@@ -59,7 +59,7 @@ public class MessageJdbcApiRepository {
         try {
             //INSERT 유저 정보
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("INSERT INTO \"message\" (message, userID, createAt) VALUES (?, ? ,?)");
+            statement = connection.prepareStatement("INSERT INTO \"Message\" (message, user_id, created_at) VALUES (?, ? ,?)");
             statement.setString(1, message);
             statement.setInt(2, userId);
             statement.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
@@ -74,15 +74,15 @@ public class MessageJdbcApiRepository {
             }
 
             //SELECT 유저 정보
-            statement = connection.prepareStatement("SELECT * FROM \"message\" WHERE userId = ?");
+            statement = connection.prepareStatement("SELECT * FROM \"Message\" WHERE user_id = ?");
             statement.setInt(1, createdMessageId);
             resultSet = statement.executeQuery(); // 1. 쿼리 실행 후 결과 테이블을 받아옴
             if (resultSet.next()) {
                 return new Message(
                         resultSet.getInt("id"),
                         resultSet.getString("message"),
-                        resultSet.getInt("userId"),
-                        resultSet.getTimestamp("createAt")
+                        resultSet.getInt("user_id"),
+                        resultSet.getTimestamp("created_at")
                                 .toInstant()
                                 .atZone(ZoneId.systemDefault())
                                 .toLocalDateTime()

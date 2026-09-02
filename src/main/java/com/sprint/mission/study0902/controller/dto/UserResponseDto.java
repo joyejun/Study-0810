@@ -25,7 +25,7 @@ public class UserResponseDto {
                 user.getAge(),
                 user.getJob(),
                 user.getSpecialty(),
-                user.getCreateAt(),
+                user.getCreate_at(),
                 messages.stream()
                         .map(MessageResponseDto::from)
                         .toList()

@@ -13,13 +13,13 @@ import java.util.List;
 public class MessageResponseDto {
     private final Integer id;
     private final String message;
-    private final LocalDateTime createAt;
+    private final LocalDateTime createdAt;
 
     public static MessageResponseDto from(Message entity) {
         return new MessageResponseDto(
                 entity.getId(),
                 entity.getMessage(),
-                entity.getCreateAt()
+                entity.getCreated_at()
         );
     }
 }

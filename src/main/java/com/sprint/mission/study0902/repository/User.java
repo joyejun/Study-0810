@@ -15,8 +15,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-
-
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)  //id 생성 책임을 database 에 위임한다.
         private Integer id;
@@ -24,6 +22,6 @@ public class User {
         private Integer age;
         private String job;
         private String specialty;
-        private LocalDateTime createAt;
+        private LocalDateTime create_at;
 
 }

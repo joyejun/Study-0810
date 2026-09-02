@@ -1,18 +1,12 @@
 package com.sprint.mission.study0902.repository;
 
-import com.sprint.mission.study0902.controller.dto.UserCreateRequestDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,7 +21,7 @@ public class UserJdbcApiRepository {
 
         try {
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("SELECT * FROM \"user\" WHERE userId = ?");
+            statement = connection.prepareStatement("SELECT * FROM \"User\" WHERE userId = ?");
             statement.setInt(1,Id);
             resultSet = statement.executeQuery(); // 1. 쿼리 실행 후 결과 테이블을 받아옴
             if (resultSet.next()) {
@@ -37,7 +31,7 @@ public class UserJdbcApiRepository {
                         resultSet.getInt("age"),
                         resultSet.getString("job"),
                         resultSet.getString("specialty"),
-                        resultSet.getTimestamp("createAt")
+                        resultSet.getTimestamp("create_at")
                                 .toInstant()
                                 .atZone(ZoneId.systemDefault())
                                 .toLocalDateTime()
@@ -53,7 +47,7 @@ public class UserJdbcApiRepository {
         }
     }
 
-    public User create(String name, Integer age, String job, String speacialty) throws SQLException {
+    public User create(String name, Integer age, String job, String specialty) throws SQLException {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -61,11 +55,11 @@ public class UserJdbcApiRepository {
         try {
             //INSERT 유저 정보
             connection = dataSource.getConnection();
-            statement = connection.prepareStatement("INSERT INTO \"user\" (name, age, job, specialty, createAt) VALUES (?, ? ,?, ?, ?)");
+            statement = connection.prepareStatement("INSERT INTO \"User\" (name, age, job, specialty, create_at) VALUES (?, ? ,?, ?, ?);");
             statement.setString(1, name);
             statement.setInt(2, age);
             statement.setString(3, job);
-            statement.setString(4, speacialty);
+            statement.setString(4, specialty);
             statement.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
             statement.executeUpdate();
 
@@ -78,7 +72,7 @@ public class UserJdbcApiRepository {
             }
 
             //SELECT 유저 정보
-            statement = connection.prepareStatement("SELECT * FROM \"user\" WHERE userId = ?");
+            statement = connection.prepareStatement("SELECT * FROM \"User\" WHERE id = ?");
             statement.setInt(1, createdUserId);
             resultSet = statement.executeQuery(); // 1. 쿼리 실행 후 결과 테이블을 받아옴
             if (resultSet.next()) {
@@ -88,7 +82,7 @@ public class UserJdbcApiRepository {
                         resultSet.getInt("age"),
                         resultSet.getString("job"),
                         resultSet.getString("specialty"),
-                        resultSet.getTimestamp("createAt")
+                        resultSet.getTimestamp("create_at")
                                 .toInstant()
                                 .atZone(ZoneId.systemDefault())
                                 .toLocalDateTime()
