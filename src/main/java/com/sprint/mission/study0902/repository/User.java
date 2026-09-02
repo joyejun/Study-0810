@@ -1,4 +1,4 @@
-package com.sprint.mission.study0902;
+package com.sprint.mission.study0902.repository;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
