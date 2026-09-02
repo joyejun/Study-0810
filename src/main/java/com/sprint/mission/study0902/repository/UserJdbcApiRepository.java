@@ -1,11 +1,14 @@
 package com.sprint.mission.study0902.repository;
 
+import com.sprint.mission.study0902.controller.dto.UserCreateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,20 +30,72 @@ public class UserJdbcApiRepository {
             statement = connection.prepareStatement("SELECT * FROM \"user\" WHERE userId = ?");
             statement.setInt(1,Id);
             resultSet = statement.executeQuery(); // 1. 쿼리 실행 후 결과 테이블을 받아옴
-            while (resultSet.next()) {
-                        new User(
-                                resultSet.getInt("id"),
-                                resultSet.getString("name"),
-                                resultSet.getInt("age"),
-                                resultSet.getString("job"),
-                                resultSet.getString("specialty"),
-                                resultSet.getTimestamp("createAt")
-                                        .toInstant()
-                                        .atZone(ZoneId.systemDefault())
-                                        .toLocalDateTime()
-                        );
+            if (resultSet.next()) {
+                return new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getInt("age"),
+                        resultSet.getString("job"),
+                        resultSet.getString("specialty"),
+                        resultSet.getTimestamp("createAt")
+                                .toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime()
+                );
             }
             return null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (null != resultSet) resultSet.close();
+            if (null != statement) statement.close();
+            if (null != connection) connection.close();
+        }
+    }
+
+    public User create(String name, Integer age, String job, String speacialty) throws SQLException {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            //INSERT 유저 정보
+            connection = dataSource.getConnection();
+            statement = connection.prepareStatement("INSERT INTO \"user\" (name, age, job, specialty, createAt) VALUES (?, ? ,?, ?, ?)");
+            statement.setString(1, name);
+            statement.setInt(2, age);
+            statement.setString(3, job);
+            statement.setString(4, speacialty);
+            statement.setTimestamp(5, Timestamp.valueOf(LocalDateTime.now()));
+            statement.executeUpdate();
+
+            //SELECT 발급 추가한 유저 정보
+            Integer createdUserId = null;
+            statement = connection.prepareStatement("SELECT lastval();");
+            resultSet = statement.executeQuery();  //실행하고 테이블 반환
+            if (resultSet.next()) {
+                createdUserId = resultSet.getInt("lastval");
+            }
+
+            //SELECT 유저 정보
+            statement = connection.prepareStatement("SELECT * FROM \"user\" WHERE userId = ?");
+            statement.setInt(1, createdUserId);
+            resultSet = statement.executeQuery(); // 1. 쿼리 실행 후 결과 테이블을 받아옴
+            if (resultSet.next()) {
+                return new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getInt("age"),
+                        resultSet.getString("job"),
+                        resultSet.getString("specialty"),
+                        resultSet.getTimestamp("createAt")
+                                .toInstant()
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime()
+                );
+            }
+            return null;
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
