@@ -51,14 +51,14 @@ public class MessageJdbcApiRepository {
     }
 
 
-    public Message create(Integer userId, String message) throws SQLException {
-        Connection connection = null;
+    public Message create(final Connection connection, Integer userId, String message) throws SQLException {
+//        Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
 
         try {
             //INSERT 유저 정보
-            connection = dataSource.getConnection();
+//            connection = dataSource.getConnection();
             if (userId > 2) throw new RuntimeException("같은 하나의 트렌젝션 내 예외 사항 발생시 Rollback 되는지 확인하기 위해 일부러 유저 3부터는 저장을 시도할시 에러를 발생시킵니다.");
             statement = connection.prepareStatement("INSERT INTO \"Message\" (message, user_id, created_at) VALUES (?, ? ,?)");
             statement.setString(1, message);
@@ -95,7 +95,7 @@ public class MessageJdbcApiRepository {
         } finally {
             if (null != resultSet) resultSet.close();
             if (null != statement) statement.close();
-            if (null != connection) connection.close();
+//            if (null != connection) connection.close();
         }
     }
 }
